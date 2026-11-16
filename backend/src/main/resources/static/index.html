@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AppLocker</title>
+  <link rel="stylesheet" href="/app.css?v=5">
+</head>
+<body>
+  <section class="gate" id="sign-in">
+    <form class="gate-card" id="sign-in-form">
+      <h1>AppLocker</h1>
+      <p>Paste the admin token from <code>backend/data/admin-token</code>.</p>
+      <input id="admin-token" type="password" autocomplete="off" required placeholder="Admin token">
+      <button type="submit">Continue</button>
+      <p class="error" id="sign-in-error" hidden></p>
+    </form>
+  </section>
+
+  <div class="shell" id="shell" hidden>
+    <aside class="sidebar">
+      <div class="brand">AppLocker</div>
+      <nav>
+        <button type="button" class="nav active" data-section="enrollment">Enrollment</button>
+        <button type="button" class="nav" data-section="policies">Rule collections</button>
+      </nav>
+      <button type="button" class="nav quiet" id="sign-out">Change admin token</button>
+    </aside>
+
+    <main>
+      <section class="card" id="enrollment">
+        <div class="card-head">
+          <div>
+            <h1>PPKG tokens</h1>
+            <p>Devices use a token to enroll through a provisioning package. Expired tokens are removed automatically.</p>
+          </div>
+        </div>
+        <div class="toolbar">
+          <label class="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Search by label">
+          </label>
+          <button type="button" id="open-generate">+ Generate token</button>
+        </div>
+        <p class="error" id="list-error" hidden></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Devices enrolled</th>
+                <th>Expires</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="token-rows"></tbody>
+          </table>
+        </div>
+        <p class="count" id="count">0 tokens</p>
+      </section>
+
+      <section class="manager-page" id="policies" hidden>
+        <div class="manager">
+          <aside class="collection-nav">
+            <p class="nav-label">Rule collections</p>
+            <div id="collection-nav"></div>
+            <div class="identity" id="identity">
+              <span class="dot"></span>
+              <div>
+                <strong>Application Identity</strong>
+                <p id="identity-text">Checking the service.</p>
+              </div>
+            </div>
+          </aside>
+          <div class="manager-main">
+            <div class="manager-head">
+              <div>
+                <p class="crumb">Rule collections / <span id="collection-crumb">Packaged apps</span></p>
+                <h1 id="collection-title">Microsoft Store apps</h1>
+                <p id="collection-help"></p>
+              </div>
+              <button type="button" id="open-rule">+ Create rule</button>
+            </div>
+            <div class="audit-banner" id="audit-banner" hidden></div>
+            <div class="summary-row">
+              <section class="summary-card">
+                <h2>Enforcement for this collection</h2>
+                <div class="segment" id="enforcement-switch">
+                  <button type="button" data-mode="AuditOnly">Audit only</button>
+                  <button type="button" data-mode="Enabled">Enforce rules</button>
+                </div>
+                <p class="help" id="enforcement-help"></p>
+              </section>
+              <section class="summary-card">
+                <div class="switch-row">
+                  <h2>Default rule</h2>
+                  <label class="switch"><input id="default-allow" type="checkbox"><span></span></label>
+                </div>
+                <p id="default-title">Allow Everyone to run all signed packaged apps</p>
+                <p class="help" id="default-help"></p>
+              </section>
+              <section class="summary-card">
+                <h2>Coverage</h2>
+                <div class="coverage" id="coverage"></div>
+                <p class="help" id="coverage-help"></p>
+              </section>
+            </div>
+            <div class="toolbar">
+              <label class="search">
+                <span aria-hidden="true">⌕</span>
+                <input id="app-search" type="search" placeholder="Search rules">
+              </label>
+              <div class="segment" id="app-filters"></div>
+            </div>
+            <p class="error" id="policy-error" hidden></p>
+            <div class="table-wrap">
+              <table>
+                <thead id="rule-head"></thead>
+                <tbody id="rule-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="backdrop" id="backdrop" hidden>
+    <div class="modal" role="dialog" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h2 id="modal-title">Generate PPKG token</h2>
+        <button type="button" class="icon-button" id="close-modal" aria-label="Close">×</button>
+      </div>
+
+      <form id="token-form">
+        <p class="lead">Three quick settings. You get the setup steps on the next screen.</p>
+        <label for="label">Label <span class="req">*</span></label>
+        <input id="label" required maxlength="80" placeholder="e.g. Finance team enrollment">
+        <p class="help">Helps you recognize this token later.</p>
+
+        <label for="device-limit">How many devices can use it?</label>
+        <div class="limit-line">
+          <div class="suffix-field">
+            <input id="device-limit" type="number" min="1" max="1000" value="50">
+            <span>devices</span>
+          </div>
+          <label class="check"><input id="no-limit" type="checkbox"> No limit</label>
+        </div>
+
+        <p class="label-text">Token expires after</p>
+        <div class="presets" id="presets">
+          <button type="button" class="preset selected" data-days="1">1 day</button>
+          <button type="button" class="preset" data-days="7">7 days</button>
+          <button type="button" class="preset" data-days="30">30 days</button>
+          <button type="button" class="preset" data-days="custom">Custom</button>
+        </div>
+        <div class="custom-days" id="custom-days" hidden>
+          <input id="custom-day-count" type="number" min="1" max="365" value="14">
+          <span>days</span>
+        </div>
+        <p class="help">Devices must enroll before this date. Existing devices stay enrolled.</p>
+        <p class="error" id="form-error" hidden></p>
+        <div class="modal-foot">
+          <span class="device-type">Device type: Corporate</span>
+          <div>
+            <button type="button" class="ghost" id="cancel-generate">Cancel</button>
+            <button type="submit">Generate token</button>
+          </div>
+        </div>
+      </form>
+
+      <section id="ready" hidden>
+        <div class="banner" id="banner"></div>
+        <ol class="steps">
+          <li>
+            <strong>Open Windows Configuration Designer</strong>
+            <p>Free from the Microsoft Store. Use your own Windows 10 or 11 PC, not a device you plan to lock down.</p>
+          </li>
+          <li>
+            <strong>Add these values</strong>
+            <p id="package-hint"></p>
+            <div class="values" id="values"></div>
+            <button type="button" class="why" id="why-toggle">Why these values?</button>
+            <p class="why-body" id="why-body" hidden>AuthPolicy OnPremise tells Windows this server checks the secret. The server URL is the discovery address. Leave the enrollment URL and policy URL empty. The secret is the token password. Set the UPN to any address such as device@lab.test.</p>
+          </li>
+          <li>
+            <strong>Export and apply</strong>
+            <p>Export the provisioning package. Install that .ppkg on the device you want to enroll. This computer is already enrolled, so use another device for a new enrollment.</p>
+          </li>
+        </ol>
+        <div class="modal-foot">
+          <button type="button" class="link" id="download-steps">Download these steps</button>
+          <button type="button" id="done">Done</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="backdrop" id="policy-backdrop" hidden>
+    <div class="modal" role="dialog" aria-labelledby="policy-modal-title">
+      <div class="modal-head">
+        <h2 id="policy-modal-title">Create rule</h2>
+        <button type="button" class="icon-button" id="close-policy" aria-label="Close">×</button>
+      </div>
+      <form id="policy-form">
+        <p class="help" id="rule-form-help"></p>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="rule-action">Action</label>
+            <select id="rule-action">
+              <option value="Allow">Allow</option>
+              <option value="Deny">Block</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="rule-type">Condition</label>
+            <select id="rule-type"></select>
+          </div>
+          <div class="form-field">
+            <label for="rule-name">Rule name <span class="req">*</span></label>
+            <input id="rule-name" required maxlength="120" placeholder="Name this rule">
+          </div>
+          <div class="form-field">
+            <label for="rule-sid">Applies to</label>
+            <select id="rule-sid">
+              <option value="S-1-1-0">Everyone</option>
+              <option value="S-1-5-32-544">Administrators</option>
+            </select>
+          </div>
+        </div>
+        <div id="path-fields">
+          <label for="rule-path">Path</label>
+          <input id="rule-path" maxlength="260" placeholder="%PROGRAMFILES%\App\app.exe">
+        </div>
+        <div id="publisher-fields">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="rule-publisher" id="publisher-label">Publisher</label>
+              <input id="rule-publisher" maxlength="300" placeholder="Publisher certificate subject, or blank for any">
+            </div>
+            <div class="form-field">
+              <label for="rule-product" id="product-label">Package or product name</label>
+              <input id="rule-product" maxlength="200" placeholder="Package or product name">
+            </div>
+            <div class="form-field" id="binary-field">
+              <label for="rule-binary">File name</label>
+              <input id="rule-binary" maxlength="200" value="*">
+            </div>
+            <div class="form-field">
+              <label for="rule-version-low">Version from</label>
+              <input id="rule-version-low" maxlength="40" placeholder="*">
+            </div>
+            <div class="form-field">
+              <label for="rule-version-high">Version to</label>
+              <input id="rule-version-high" maxlength="40" placeholder="*">
+            </div>
+          </div>
+        </div>
+        <div id="hash-fields" hidden>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="rule-hash">SHA-256</label>
+              <input id="rule-hash" maxlength="80" placeholder="64 hexadecimal characters">
+            </div>
+            <div class="form-field">
+              <label for="rule-file">File name</label>
+              <input id="rule-file" maxlength="260">
+            </div>
+            <div class="form-field">
+              <label for="rule-length">File length</label>
+              <input id="rule-length" type="number" min="1">
+            </div>
+          </div>
+        </div>
+        <div class="safety-note" id="rule-safety"></div>
+        <p class="error" id="policy-form-error" hidden></p>
+        <div class="modal-foot">
+          <span class="device-type" id="policy-mode-label"></span>
+          <div>
+            <button type="button" class="ghost" id="cancel-policy">Cancel</button>
+            <button type="submit">Save rule</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/app.js?v=5"></script>
+</body>
+</html>

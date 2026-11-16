@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8443}
+
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:file:./data/applocker;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+
+applocker:
+  environment: local
+  public-base-url: ${PUBLIC_BASE_URL:https://localhost:8443}
+  ca:
+    directory: data/lab-ca

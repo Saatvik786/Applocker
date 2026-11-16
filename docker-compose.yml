@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: applocker
+      POSTGRES_USER: applocker
+      POSTGRES_PASSWORD: applocker
+    volumes:
+      - applocker-pg:/var/lib/postgresql/data
+
+volumes:
+  applocker-pg:

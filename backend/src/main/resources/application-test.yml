@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:applocker;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+
+applocker:
+  environment: test
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  ca:
+    directory: target/test-ca

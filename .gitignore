@@ -1,0 +1,48 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.cer
+*.crt
+*.ppkg
+**/admin-token
+**/keystore-password
+
+# Lab runtime data (CA, H2 / local DB, tokens on disk)
+data/
+backend/data/
+
+# Java and Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+
+# Node, Vite, and React
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Logs and traces
+*.log
+logs/
+*.trace.db
+*.mv.db
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+Thumbs.db
+.DS_Store
