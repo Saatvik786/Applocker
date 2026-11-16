@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD:}
+    # Set SPRING_DATASOURCE_URL, or link Railway Postgres (PGHOST/PGPORT/PGDATABASE are injected).
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST}:${PGPORT:5432}/${PGDATABASE}?sslmode=require}
+    username: ${DATABASE_USERNAME:${PGUSER}}
+    password: ${DATABASE_PASSWORD:${PGPASSWORD:}}
 
 applocker:
   environment: deploy

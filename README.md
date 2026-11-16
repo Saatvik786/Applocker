@@ -136,6 +136,12 @@ cd backend
 .\mvnw.cmd test
 ```
 
+## Deploy on Railway
+
+You can host the API, UI, and PostgreSQL on [Railway](https://railway.app). Use **`SPRING_PROFILES_ACTIVE=deploy`**, **`APPLOCKER_LAB_TLS=false`**, a mounted volume at **`/app/data`** for the lab CA, and **`PUBLIC_BASE_URL=https://your-app.up.railway.app`**.
+
+Step-by-step: **[docs/deploy-railway.md](docs/deploy-railway.md)**.
+
 ## Documentation
 
 - [Architecture](docs/architecture.md)
@@ -143,6 +149,7 @@ cd backend
 - [Windows provisioning and MDM](docs/windows-management.md)
 - [Milestones](docs/milestones.md)
 - [Enrollment lab](docs/enrollment-lab.md)
+- [Deploy on Railway](docs/deploy-railway.md)
 
 ## Security notes
 
